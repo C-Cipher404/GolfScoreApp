@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", async function() {
         await populateTeeBoxSelect(selectedCourseId);
         await constructScorecard(selectedCourseId);
     });
+
+    document.getElementById('tee-box-select').addEventListener('change', function() {
+        const selectedTeeBoxIndex = this.value;
+        console.log(`Selected Tee Box Index: ${selectedTeeBoxIndex}`); 
+    });
 });
 
 async function getAvailableGolfCourses() {
@@ -35,7 +40,7 @@ async function getGolfCourseDetails(courseId) {
 async function populateCourseSelect() {
     try {
         const courses = await getAvailableGolfCourses();
-        console.log(courses); // Check the response structure
+        console.log(courses); 
         let courseOptionsHtml = '<option value="">Select a course</option>';
         courses.forEach(course => {
             courseOptionsHtml += `<option value="${course.id}">${course.name}</option>`;
@@ -49,6 +54,7 @@ async function populateCourseSelect() {
 async function populateTeeBoxSelect(courseId) {
     try {
         const courseDetails = await getGolfCourseDetails(courseId);
+        console.log(courseDetails); 
         let teeBoxOptionsHtml = '<option value="">Select a tee box</option>';
         courseDetails.teeBoxes.forEach((teeBox, index) => {
             teeBoxOptionsHtml += `<option value="${index}">${teeBox.teeType.toUpperCase()} - ${teeBox.totalYards} yards</option>`;
@@ -105,12 +111,15 @@ class Player {
         this.id = id;
         this.scores = scores;
     }
+
     getOutScore() {
         return this.scores.slice(0, 9).reduce((acc, score) => acc + score, 0);
     }
+
     getInScore() {
         return this.scores.slice(9).reduce((acc, score) => acc + score, 0);
     }
+
     getTotalScore() {
         return this.getOutScore() + this.getInScore();
     }
@@ -124,7 +133,6 @@ function addPlayer(playerName) {
     players.push(newPlayer);
     renderPlayerRows();
 }
-
 function renderPlayerRows() {
     const scorecardTable = document.getElementById('scorecard-table');
     let playerRowsHtml = '';
@@ -151,10 +159,8 @@ function updatePlayerScore(playerId, holeIndex, score) {
 
 function printScores() {
     players.forEach(player => {
-        const outScore = player.getOutScore();
-        const inScore = player.getInScore();
         const totalScore = player.getTotalScore();
-
         toastr.success(`${player.name} has finished with a total score of ${totalScore}!`, 'Game Finished');
     });
 }
+
